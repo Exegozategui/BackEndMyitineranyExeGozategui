@@ -16,14 +16,25 @@ const addCity= async(req, res) =>{
 }
 
 
-const getCities =async (req,res) =>{
-    try{
-        let cities=await City.find()
-        res.json({cities})
-    }catch(error){
-        res.status(500).json({message:error.message})
+
+
+const getCities = async (req, res) => {
+    try {
+        const searchTerm = req.query.nombre;
+        let cities;
+
+        if (searchTerm) {
+            cities = await City.find({ nombre: {$regex: `^${searchTerm}`, $options: 'i'} });
+        } else {
+            cities = await City.find();
+        }
+
+        res.status(200).json({ cities });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
-}
+};
+
 
 const getCity= async (req,res)=>{
     try{
@@ -52,9 +63,9 @@ const deleteCity = async(req,res)=>{
 const updateCity= async  (req,res) => {
     try{
         let data= {
-            nombre: req.body.name,
-            pais:req.body.country,
-            foto: req.body.photo
+            ciudad: req.body.ciudad,
+            pais:req.body.pais,
+            imagen: req.body.imagen
         }
 
         const{id} =req.params
@@ -71,98 +82,11 @@ const updateCity= async  (req,res) => {
         }
     }
 
-    const addAllCities=async (req,res)=>{
+    const addCollectionCities=async (req,res)=>{
         try{
-            let allCities= [
-                
-                    
-    {
-        
-        "ciudad": "Osaka",
-        "pais": "Japon",
-        "imagen": "public/Osaka Japon.jpg",
-        "url": ""
-      },
-      {
-        
-        "ciudad": "Queenstown",
-        "pais": "Nueva Zelanda",
-        "imagen": "/public/queenstown-nueva-zelanda.jpg",
-        "url": ""
-      },
-      {
-       
-        "ciudad": "Cartagena",
-        "pais": "Colombia",
-        "imagen": "public/cartagena-colombia-1.jpg",
-        "url": ""
-      },
-      {
-  
-        "ciudad": "Ciudad del Cabo",
-        "pais": "Sudafrica",
-        "imagen": "public/ciudad-del-cabo-sudafrica.jpg",
-        "url": ""
-      },
-      {
-     
-        "ciudad": "Delhi",
-        "pais": "India",
-        "imagen": "public/Delhi india.jpg",
-        "url": ""
-      },
-      {
-      
-        "ciudad": "El Cairo",
-        "pais": "Egipto",
-        "imagen": "public/EL cairo Egipto.jpg",
-        "url": ""
-      },
-      {
-      
-        "ciudad": "San Petesburgo",
-        "pais": "Rusia",
-        "imagen": "public/san-petersburgo-rusia.jpg",
-        "url": ""
-      },
-      {
-      
-        "ciudad": "Shangai",
-        "pais": "China",
-        "imagen": "public/Shangai China.jpg",
-        "url": ""
-      },
-      {
-      
-        "ciudad": "Sidney",
-        "pais": "Australia",
-        "imagen": "public/sidney-australia.jpg",
-        "url": ""
-      },
-      {
-       
-        "ciudad": "Amsterdam",
-        "pais": "Paises Bajos",
-        "imagen": "public/amsterdam-paises-bajos-1.jpg",
-        "url": ""
-      },
-      {
-        
-        "ciudad": "Italia",
-        "pais": "Venecia",
-        "imagen": "public/Venecia Italia.jpg",
-        "url": ""
-      },
-      {
-        
-        "ciudad": "Lisboa",
-        "pais": "Portugal",
-        "imagen": "public/lisboa-portugal.jpg",
-        "url": ""
-      }
-                
-            ]
-         await City.insertMany(allCities)
+          
+
+        let allCities = await City.insertMany(req.body)
          res.status(200).json({
             message:"All Cities has ben successfully",
             allCities
@@ -176,4 +100,4 @@ const updateCity= async  (req,res) => {
 
 
 
-module.exports={addCity,updateCity,deleteCity,getCities,getCity,addAllCities}
+module.exports={addCity,updateCity,deleteCity,getCities,getCity,addCollectionCities}

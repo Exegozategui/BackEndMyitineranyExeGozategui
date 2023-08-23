@@ -2,18 +2,19 @@ const {Schema, model }=require("mongoose")
 
 
 const schemaCities = new Schema({
-                   nombre: {
+                   ciudad: {
                     type: String,
                     require: true
                    },
 
-                   foto:{
-                    type: String,
-                    require: true
-                   },
                    pais:{
                     type: String,
                     require: true
+                   },
+                   imagen:{
+                    type: String,
+                    require: true
+                    
 
                    }
 
