@@ -1,6 +1,6 @@
 const City= require("../model/City")
 
-
+//Agrega una ciudad
 const addCity= async(req, res) =>{
     try{
         let datacities= req.body
@@ -17,7 +17,7 @@ const addCity= async(req, res) =>{
 
 
 
-
+//Obtener ciudaddes
 const getCities = async (req, res) => {
     try {
         const searchTerm = req.query.nombre;
@@ -35,7 +35,7 @@ const getCities = async (req, res) => {
     }
 };
 
-
+//Obeter una sola ciudad por id
 const getCity= async (req,res)=>{
     try{
         const{id}=req.params
@@ -46,7 +46,7 @@ const getCity= async (req,res)=>{
         res.status(500).json({message:error.message})
     }
 }
-
+//Borrar ciuad
 const deleteCity = async(req,res)=>{
     try{
         const {id}=req.params
@@ -59,7 +59,7 @@ const deleteCity = async(req,res)=>{
         res.status(500).json({message:error.mensage})
     }
 }
-
+//Actualizar una ciudad
 const updateCity= async  (req,res) => {
     try{
         let data= {

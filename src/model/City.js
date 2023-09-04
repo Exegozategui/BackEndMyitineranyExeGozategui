@@ -1,4 +1,4 @@
-const {Schema, model }=require("mongoose")
+const {Schema, model, Types }=require("mongoose")
 
 
 const schemaCities = new Schema({
@@ -16,7 +16,11 @@ const schemaCities = new Schema({
                     require: true
                     
 
-                   }
+                   },
+                   itineraries:[{
+                    type:Types.ObjectId,
+                    ref: "Itineraries"
+                   }]
 
 })
 
