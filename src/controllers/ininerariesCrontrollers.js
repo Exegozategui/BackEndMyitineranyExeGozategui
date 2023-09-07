@@ -3,114 +3,103 @@ const City = require('../model/City'); // Importa el modelo City
 
 // Consultar (GET) todos los itinerarios
 async function getAllItineraries(req, res) {
-  try {
-    const itineraries = await Itinerary.find();
-    res.json(itineraries);
-  } catch (error) {
-    res.status(500).json({ error: 'Error al obtener los itinerarios.' });
-  }
+   try {
+    const itineraries = await Itinerary.find().populate("city_id")
+    res.status(200).json({ itineraries })
+} catch (error) {
+    res.status(500).json({ message: error.message })
 }
+}
+
 
 // Consultar itinerarios de una ciudad en particular
 async function getItinerariesByCity(req, res) {
-  const cityId = req.params.cityId;
-
   try {
-    const itineraries = await Itinerary.find({ city_id: cityId });
-    res.json(itineraries);
-  } catch (error) {
-    res.status(500).json({ error: 'Error al obtener los itinerarios de la ciudad.' });
-  }
+    let { cityId } = req.params
+    const cityFound = await City.findById(cityId)
+    if(cityFound) {
+        const itineraries = await Itinerary.find({city_id: cityId}).populate("city_id", {_id:0, nombre: 1})
+
+        if(!itineraries.length){
+            return res.json([])
+        }
+        res.status(200).json({ itineraries })
+    }
+    
+} catch (error) {
+    res.status(500).json({ message: error.message })
+}
 }
 
 // Consultar un itinerario en particular (por id)
 async function getItineraryById(req, res) {
-  const itineraryId = req.params.id;
-
   try {
-    const itinerary = await Itinerary.findById(itineraryId);
-    if (!itinerary) {
-      return res.status(404).json({ error: 'Itinerario no encontrado.' });
-    }
-    res.json(itinerary);
-  } catch (error) {
-    res.status(500).json({ error: 'Error al obtener el itinerario.' });
-  }
+    let { cityId } = req.params
+    const cityFound = await City.findById(cityId)
+    if(cityFound) {
+        let { iid } = req.params
+        const itinerary = await Itinerary.findById(iid).populate("city_id")
+        res.status(200).json({ itinerary })
+    }        
+} catch (error) {
+    res.status(500).json({ message: error.message })
+}
 }
 
 // Crear un nuevo itinerario
 async function createItinerary(req, res) {
-  const { user_name, city_id, photo_user, name, price, duration, likes, hashtags, comments } = req.body;
-
   try {
-    const itinerary = new Itinerary({
-      user_name,
-      city_id,
-      photo_user,
-      name,
-      price,
-      duration,
-      likes,
-      hashtags,
-      comments,
-    });
-    await itinerary.save();
-
-    // Agregar el itinerario a la ciudad correspondiente
-    const city = await City.findById(city_id);
-    if (!city) {
-      return res.status(404).json({ error: 'Ciudad no encontrada.' });
+    let { cityId } = req.params
+    const cityFound = await City.findById(cityId)
+    
+    if(cityFound) {
+        const dataItinerary = req.body
+        const newItinerary = await Itinerary.create({...dataItinerary, city_id: cityFound})
+        await cityFound.updateOne({ _itineraries: [ ...cityFound._itineraries, newItinerary ] })
     }
-    city.itineraries.push(itinerary);
-    await city.save();
+    
+    const cityFoundUpdate = await City.findById(cityId).populate("_itineraries")
 
-    res.status(201).json(itinerary);
-  } catch (error) {
-    res.status(500).json({ error: 'Error al crear el itinerario.' });
-  }
+    res.status(201).json({
+        message: "Itinerary has been added",
+        Itinerary: cityFoundUpdate
+    })
+} catch (error) {
+    res.status(500).json({ message: error.message })
+}
 }
 
 // Modificar un itinerario
 async function updateItinerary(req, res) {
-  const itineraryId = req.params.id;
-  const { user_name, photo_user, name, price, duration, likes, hashtags, comments } = req.body;
-
   try {
-    const itinerary = await Itinerary.findByIdAndUpdate(
-      itineraryId,
-      { user_name, photo_user, name, price, duration, likes, hashtags, comments },
-      { new: true }
-    );
-    if (!itinerary) {
-      return res.status(404).json({ error: 'Itinerario no encontrado.' });
-    }
-    res.json(itinerary);
-  } catch (error) {
-    res.status(500).json({ error: 'Error al modificar el itinerario.' });
-  }
+    let newData = req.body
+    
+    const {iid} = req.params
+    await Itinerary.findByIdAndUpdate(iid, newData)
+
+    res.status(201).json({
+        message: "Itinerary has been update",
+        newData
+    })
+} catch (error) {
+    res.status(500).json({ message: error.message })
 }
+}
+
 
 // Borrar un itinerario
 async function deleteItinerary(req, res) {
   const itineraryId = req.params.id;
 
   try {
-    const itinerary = await Itinerary.findByIdAndRemove(itineraryId);
-    if (!itinerary) {
-      return res.status(404).json({ error: 'Itinerario no encontrado.' });
-    }
-
-    // Eliminar el itinerario de la ciudad correspondiente
-    const city = await City.findById(itinerary.city_id);
-    if (city) {
-      city.itineraries.pull(itinerary);
-      await city.save();
-    }
-
-    res.json({ message: 'Itinerario eliminado exitosamente.' });
-  } catch (error) {
-    res.status(500).json({ error: 'Error al borrar el itinerario.' });
-  }
+    const {iid} = req.params
+    await Itinerary.findByIdAndDelete(iid)
+    res.status(201).json({
+        message: "Itinerary has been delete",
+    })
+} catch (error) {
+    res.status(500).json({ message: error.message })
+}
 }
 
 module.exports = {

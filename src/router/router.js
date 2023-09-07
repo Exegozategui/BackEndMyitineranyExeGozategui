@@ -14,10 +14,10 @@ router.post("/api/cities/collection",addCollectionCities)
 
 router.get("/api/itineraries", getAllItineraries); // Consultar (GET) todos los itinerarios
 router.get("/api/itineraries/:cityId", getItinerariesByCity); // Consultar itinerarios de una ciudad en particular
-router.get("/api/itinerary/:id", getItineraryById); // Consultar un itinerario en particular (por id)
-router.post("/api/itineraries", createItinerary); // Crear un nuevo itinerario
-router.put("/api/itinerary/:id", updateItinerary); // Modificar un itinerario
-router.delete("/api/itinerary/:id", deleteItinerary); // Borrar un itinerario
+router.get("/api/itinerary/:cityId/:iid", getItineraryById); // Consultar un itinerario en particular (por id)
+router.post("/api/itineraries/:cityId", createItinerary); // Crear un nuevo itinerario
+router.put("/api/itinerary/:iid", updateItinerary); // Modificar un itinerario
+router.delete("/api/itinerary/:iid", deleteItinerary); // Borrar un itinerario
 
 
 

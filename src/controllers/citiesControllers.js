@@ -1,5 +1,6 @@
 const City= require("../model/City")
 
+
 //Agrega una ciudad
 const addCity= async(req, res) =>{
     try{
@@ -20,26 +21,25 @@ const addCity= async(req, res) =>{
 //Obtener ciudaddes
 const getCities = async (req, res) => {
     try {
-        const searchTerm = req.query.nombre;
-        let cities;
-
+        const searchTerm = req.query.nombre
         if (searchTerm) {
-            cities = await City.find({ nombre: {$regex: `^${searchTerm}`, $options: 'i'} });
+          
+            const filteredCities = await City.find({ nombre: {$regex: `^${searchTerm}`, $options: 'i'} }).populate("_itineraries")  
+            res.status(200).json({ cities: filteredCities }) 
         } else {
-            cities = await City.find();
+            let cities = await City.find().populate("_itineraries")  
+            res.status(200).json({ cities })
         }
-
-        res.status(200).json({ cities });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message })
     }
-};
+}
 
 //Obeter una sola ciudad por id
 const getCity= async (req,res)=>{
     try{
         const{id}=req.params
-        const city= await City.findById(id)
+        const city= await City.findById(id).populate("_itineraries")
         res.json({city})
     
     }catch (error) {
