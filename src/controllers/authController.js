@@ -1,84 +1,86 @@
-const User = require('../model/User')
+const { verifyPassword } = require('../middlewares/auth')
+const User = require('../models/userModel')
 
-/* sign Up */
-const registerUser = async (req, res)=>{
+const register = async (req, res) => {
+  try {
+    const payload = req.body
+    const userExist = await User.findOne({email: payload.email})
 
-     const userPayload = req.body 
-     const userExists = await User.findOne({ email: userPayload.email})   
+    if(userExist){
+      return res.status(403).json({
+        message: ["User already exist"]
+      })
+    }
     
-    try {
-            if (userExists){
-               return res.status(403).json({
-                    message: "This user already exists"
-                })
-            }
+    const userCreated = await User.create(payload)
 
-
-            const newUser = await User.create(userPayload)
-
-
-            
-            res.status(200).json(
-             {
-                 "message": "user registered",
-                 "user": newUser
-             }
-       )
-            
-        } catch (error) {
-            res.status(400).json({message: error.message})
-        }
-
-}
-/* login  */
-const userLogin =  async (req, res )=>{
-
-    try {
-        res.status(200).json({
-            message: "Succesfully logged in",
-            token: req.token,
-            user: {
-                email: req.user.email,
-                id: req.user._id,
-                urlimage: req.user.urlimage,
-                firstName: req.user.firstName
-
-            }
-        })
-
-    } catch (error) {
-        res.status(400).json({message: error.message})
-    }
-}
-/* login with jwt and passport controller */
-const authenticated = async (req, res)=>{
-     try {
-        res.status(200).json({
-            message: "Succesfully authenticated",
-            token: req.token,
-            user: {
-                email: req.user.email,
-                id: req.user._id,
-               
-
-            }
-        })
-
-    } catch (error) {
-        res.status(400).json({message: error.message})
-    }
+    res.status(200).json({
+      message: ["User created successfully"],
+      success: true,
+      userCreated
+    })
+  } catch (error) {
+    res.status(400).json({
+      message
+    })
+  }
 }
 
-const userLogout = async (req, res)=>{
+const login = async (req, res) => {
+  try {
+  
+    res.status(200).json({
+      message: ["Login successfully"],
+      token: req.token,
+      success: true,
+      user: {
+        nombre: req.user.nombre,
+        email: req.user.email,
+        foto: req.user.foto,
+        _id: req.user._id
+      }
+    })
 
-    try {
-            res.status(200).json({message: 'logged out', token: req.token})
-        
-    } catch (error) {
-        res.status(500).json({message: error.message})
-    }
-
+  } catch (error) {
+    res.status(400).json({
+      message: error.message
+    })
+  }
 }
 
+const authenticated = async (req, res) => {
+  try {
+  
+    res.status(200).json({
+      message: "Authenticated successfully",
+      token: req.token,
+      success: true,
+      user: {
+        nombre: req.user.nombre,
+        email: req.user.email,
+        foto: req.user.foto,
+        _id: req.user._id
+      }
+    })
 
-module.exports= {registerUser, userLogin, authenticated, userLogout}
+  } catch (error) {
+    res.status(400).json({
+      message: error.message
+    })
+  }
+}
+
+const logout = async (req, res) => {
+  try {
+    res.status(200).json({
+      message: "Logged out",
+      token: req.token
+    })
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    })
+  }
+}
+
+module.exports = { register, login, authenticated, logout }

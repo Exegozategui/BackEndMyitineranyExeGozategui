@@ -2,7 +2,7 @@ const express = require("express")
 const router = express.Router()
 const {addCity,getCities,getCity,updateCity,deleteCity,addCollectionCities}=require("../controllers/citiesControllers")
 const {getAllItineraries,getItinerariesByCity,getItineraryById,createItinerary,updateItinerary,deleteItinerary}=require("../controllers/ininerariesCrontrollers")
-const authRoutes = require("./authRoutes");
+const authRouter = require('./auth')
 
 //City ROuter
 router.post("/api/city",addCity)
@@ -21,7 +21,7 @@ router.put("/api/itinerary/:iid", updateItinerary); // Modificar un itinerario
 router.delete("/api/itinerary/:iid", deleteItinerary); // Borrar un itinerario
 
 
-router.use("/", authRoutes);
+router.use("/user", authRouter)
 
 
 module.exports =router

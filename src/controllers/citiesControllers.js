@@ -1,4 +1,4 @@
-const City= require("../model/City")
+const City= require("../models/City")
 
 
 //Agrega una ciudad

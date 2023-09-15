@@ -1,5 +1,5 @@
-const Itinerary = require('../model/Itineraries'); // Importa el modelo Itineraries
-const City = require('../model/City'); // Importa el modelo City
+const Itinerary = require('../models/Itineraries'); // Importa el modelo Itineraries
+const City = require('../models/City'); // Importa el modelo City
 
 // Consultar (GET) todos los itinerarios
 async function getAllItineraries(req, res) {
